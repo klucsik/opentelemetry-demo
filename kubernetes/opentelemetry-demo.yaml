@@ -10222,6 +10222,8 @@ spec:
             value: http://$(OTEL_COLLECTOR_NAME):4317
           - name: OTEL_RESOURCE_ATTRIBUTES
             value: service.name=$(OTEL_SERVICE_NAME),service.namespace=opentelemetry-demo
+          - name: FEATURE_FLAG_GRPC_SERVICE_ADDR
+            value: opentelemetry-demo-featureflagservice:50053
           resources:
             limits:
               memory: 1Gi

@@ -8,6 +8,9 @@ import json
 import os
 import random
 import uuid
+import grpc
+import demo_pb2
+import demo_pb2_grpc
 from locust import HttpUser, task, between
 from locust_plugins.users.playwright import PlaywrightUser, pw, PageWithRetry, event
 
@@ -37,6 +40,22 @@ Jinja2Instrumentor().instrument()
 RequestsInstrumentor().instrument()
 SystemMetricsInstrumentor().instrument()
 URLLib3Instrumentor().instrument()
+
+#Initialize Feature flag channel
+ff_addr = os.environ.get('FEATURE_FLAG_GRPC_SERVICE_ADDR')
+feature_flag_stub = None
+if ff_addr is not None:
+    ff_channel = grpc.insecure_channel(ff_addr)
+    feature_flag_stub = demo_pb2_grpc.FeatureFlagServiceStub(ff_channel)
+
+flood_count = int(os.environ.get("FLOOD_COUNT", 100))
+
+#Get feature flag value  
+def check_feature_flag(flag_name: str):
+    if feature_flag_stub is None:
+        return False
+    flag = feature_flag_stub.GetFlag(demo_pb2.GetFlagRequest(name=flag_name)).flag
+    return flag.enabled
 
 categories = [
     "binoculars",
@@ -127,6 +146,12 @@ class WebsiteUser(HttpUser):
         checkout_person = random.choice(people)
         checkout_person["userId"] = user
         self.client.post("/api/checkout", json=checkout_person)
+
+    @task(5)
+    def flood_home(self):
+        if check_feature_flag("floodHome"):
+            for _ in range(0, flood_count):
+                self.client.get("/")
 
     def on_start(self):
         ctx = baggage.set_baggage("synthetic_request", "true")
