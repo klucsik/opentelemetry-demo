@@ -37,6 +37,7 @@ import oteldemo.Demo.AdResponse;
 import oteldemo.Demo.GetFlagResponse;
 import oteldemo.FeatureFlagServiceGrpc.FeatureFlagServiceBlockingStub;
 import oteldemo.problempattern.CPULoad;
+import oteldemo.problempattern.GarbageCollectionTrigger;
 
 public final class AdService {
 
@@ -122,6 +123,7 @@ public final class AdService {
   private static class AdServiceImpl extends oteldemo.AdServiceGrpc.AdServiceImplBase {
 
     private static final String ADSERVICE_FAIL_FEATURE_FLAG = "adServiceFailure";
+    private static final String ADSERVICE_MANUAL_GC_FEATURE_FLAG = "adServiceManualGc";
 
     private final FeatureFlagServiceBlockingStub featureFlagServiceStub;
 
@@ -184,6 +186,12 @@ public final class AdService {
           throw new StatusRuntimeException(Status.RESOURCE_EXHAUSTED);
         }
 
+        if (getFeatureFlagEnabled(ADSERVICE_MANUAL_GC_FEATURE_FLAG)) {
+          logger.warn("Feature Flag " + ADSERVICE_FAIL_FEATURE_FLAG + " enabled, performing a manual gc now");
+          GarbageCollectionTrigger gct = new GarbageCollectionTrigger();
+          gct.doExecute();
+        }
+
         AdResponse reply = AdResponse.newBuilder().addAllAds(allAds).build();
         responseObserver.onNext(reply);
         responseObserver.onCompleted();
@@ -194,6 +202,26 @@ public final class AdService {
         logger.log(Level.WARN, "GetAds Failed with status {}", e.getStatus());
         responseObserver.onError(e);
       }
+    }
+
+    /**
+     * Retrieves the status of a feature flag from the Feature Flag service.
+     *
+     * @param ff The name of the feature flag to retrieve.
+     * @return {@code true} if the feature flag is enabled, {@code false} otherwise or in case of errors.
+     * @throws StatusRuntimeException If an error occurs during the communication with the Feature Flag service.
+     */
+    private boolean getFeatureFlagEnabled(String ff) {
+      if (featureFlagServiceStub == null) {
+        return false;
+      }
+
+      GetFlagResponse response =
+              featureFlagServiceStub.getFlag(
+                      oteldemo.Demo.GetFlagRequest.newBuilder()
+                              .setName(ff)
+                              .build());
+      return response.getFlag().getEnabled();
     }
 
     boolean checkAdFailure() {

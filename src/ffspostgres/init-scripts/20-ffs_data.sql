@@ -10,4 +10,5 @@ VALUES
     ('adServiceHighCpu', 'Enables high CPU problem pattern', 0),
     ('cartServiceFailure', 'Fail cart service requests', 0),
     ('paymentServiceFailure', 'Fail payment service charge requests', 0),
-    ('paymentServiceUnreachable', 'Payment service is unavailable', 0);
+    ('paymentServiceUnreachable', 'Payment service is unavailable', 0),
+    ('adServiceManualGc', 'Triggers a full manual gc in the ad service', 0);
