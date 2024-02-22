@@ -9433,6 +9433,7 @@ spec:
               cpu: 750m
           volumeMounts:
       volumes:
+
 ---
 # Source: opentelemetry-demo/templates/component.yaml
 apiVersion: apps/v1
