@@ -217,6 +217,13 @@ func (p *productCatalog) Watch(req *healthpb.HealthCheckRequest, ws healthpb.Hea
 func (p *productCatalog) ListProducts(ctx context.Context, req *pb.Empty) (*pb.ListProductsResponse, error) {
 	span := trace.SpanFromContext(ctx)
 
+	if p.getFeatureFlag(ctx, "itemListInternal") {
+		msg := fmt.Sprintf("itemListInternal flag enabled! List failed!")
+		span.SetStatus(otelcodes.Error, msg)
+		span.AddEvent(msg)
+		return nil, status.Errorf(codes.Internal, msg)
+	}
+
 	span.SetAttributes(
 		attribute.Int("app.products.count", len(catalog)),
 	)
@@ -235,6 +242,13 @@ func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductReque
 		span.SetStatus(otelcodes.Error, msg)
 		span.AddEvent(msg)
 		return nil, status.Errorf(codes.Internal, msg)
+	}
+
+	if p.getFeatureFlag(ctx, "itemNotFound") {
+		msg := fmt.Sprintf("itemNotFound flag enabled! Product Not Found!")
+		span.SetStatus(otelcodes.Error, msg)
+		span.AddEvent(msg)
+		return nil, status.Errorf(codes.NotFound, msg)
 	}
 
 	var found *pb.Product
@@ -281,6 +295,11 @@ func (p *productCatalog) checkProductFailure(ctx context.Context, id string) boo
 		return false
 	}
 
+	return p.getFeatureFlag(ctx, "productCatalogFailure")
+}
+
+func (p *productCatalog) getFeatureFlag(ctx context.Context, flagName string) bool {
+
 	conn, err := createClient(ctx, p.featureFlagSvcAddr)
 	if err != nil {
 		span := trace.SpanFromContext(ctx)
@@ -289,7 +308,6 @@ func (p *productCatalog) checkProductFailure(ctx context.Context, id string) boo
 	}
 	defer conn.Close()
 
-	flagName := "productCatalogFailure"
 	ffResponse, err := pb.NewFeatureFlagServiceClient(conn).GetFlag(ctx, &pb.GetFlagRequest{
 		Name: flagName,
 	})
