@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  * at specified intervals to simulate memory pressure and measure the impact on performance.
  */
 public class GarbageCollectionTrigger {
-    private static final Logger log = Logger.getLogger("test");
+    private static final Logger log = Logger.getLogger(GarbageCollectionTrigger.class.getName());
 
     // how long to wait after an OOM was caused before we trigger another
     private final long gc_delay;
