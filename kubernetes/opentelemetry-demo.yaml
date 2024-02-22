@@ -9430,6 +9430,7 @@ spec:
           resources:
             limits:
               memory: 300Mi
+              cpu: 750m
           volumeMounts:
       volumes:
 ---

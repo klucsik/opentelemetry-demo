@@ -36,6 +36,7 @@ import oteldemo.Demo.AdRequest;
 import oteldemo.Demo.AdResponse;
 import oteldemo.Demo.GetFlagResponse;
 import oteldemo.FeatureFlagServiceGrpc.FeatureFlagServiceBlockingStub;
+import oteldemo.problempattern.CPULoad;
 
 public final class AdService {
 
@@ -138,6 +139,8 @@ public final class AdService {
     @Override
     public void getAds(AdRequest req, StreamObserver<AdResponse> responseObserver) {
       AdService service = AdService.getInstance();
+      CPULoad cpuload = CPULoad.getInstance();
+      cpuload.execute();
 
       // get the current span in context
       Span span = Span.current();
