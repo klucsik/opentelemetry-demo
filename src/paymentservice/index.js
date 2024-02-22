@@ -8,10 +8,16 @@ const opentelemetry = require('@opentelemetry/api')
 const charge = require('./charge')
 const logger = require('./logger')
 
+const { getFeatureFlagEnabled } = require('./grpc-ff-client')
+
 async function chargeServiceHandler(call, callback) {
   const span = opentelemetry.trace.getActiveSpan();
 
   try {
+    if (await getFeatureFlagEnabled("paymentServiceUnreachable")) {
+      throw new Error("PaymentService Unavailable Feature Flag Enabled")
+    }
+
     const amount = call.request.amount
     span.setAttributes({
       'app.payment.amount': parseFloat(`${amount.units}.${amount.nanos}`)

@@ -9,27 +9,7 @@ const tracer = trace.getTracer('paymentservice');
 const meter = metrics.getMeter('paymentservice');
 const transactionsCounter = meter.createCounter('app.payment.transactions')
 
-let grpc = require('@grpc/grpc-js');
-let protoLoader = require('@grpc/proto-loader');
-let protoDescriptor = grpc.loadPackageDefinition(protoLoader.loadSync('demo.proto'));
-let client = new protoDescriptor.oteldemo.FeatureFlagService (
-    process.env.FEATURE_FLAG_GRPC_SERVICE_ADDR,
-    grpc.credentials.createInsecure()
-);
-
-async function getFeatureFlagEnabled(featureFlag) {
-  try {
-    const response = await new Promise((resolve, reject) => {
-      client.getFlag({ name: featureFlag }, (error, response) => {
-        error ? reject(error) : resolve(response);
-      });
-    });
-
-    return response.flag?.enabled || false;
-  } catch (error) {
-    logger.error(`Error getting FeatureFlag: ${error}`);
-  }
-}
+const { getFeatureFlagEnabled } = require('./grpc-ff-client')
 
 module.exports.charge = async request => {
   const span = tracer.startSpan('charge');
