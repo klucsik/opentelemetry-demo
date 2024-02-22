@@ -10264,6 +10264,8 @@ spec:
           - containerPort: 8080
             name: service
           env:
+          - name: FEATURE_FLAG_GRPC_SERVICE_ADDR
+            value: 'opentelemetry-demo-featureflagservice:50053'
           - name: OTEL_SERVICE_NAME
             valueFrom:
               fieldRef:
