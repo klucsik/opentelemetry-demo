@@ -1,7 +1,7 @@
 // Copyright The OpenTelemetry Authors
 // SPDX-License-Identifier: Apache-2.0
 
-import { Ad, Address, Cart, CartItem, Money, PlaceOrderRequest, Product } from '../protos/demo';
+import { Ad, Address, Cart, CartItem, Flag, Money, PlaceOrderRequest, Product } from '../protos/demo';
 import { IProductCart, IProductCartItem, IProductCheckout } from '../types/Cart';
 import request from '../utils/Request';
 import SessionGateway from './Session.gateway';
@@ -89,6 +89,14 @@ const ApiGateway = () => ({
       },
     });
   },
+  getFlag(flagName: string){
+    return request<Flag>({
+      url: `${basePath}/featureflag`,
+      queryParams: {
+        flagName,
+      },
+    })
+  }
 });
 
 export default ApiGateway();

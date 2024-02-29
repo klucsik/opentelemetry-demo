@@ -6,6 +6,8 @@ import * as S from './Footer.styled';
 import SessionGateway from '../../gateways/Session.gateway';
 import { CypressFields } from '../../utils/Cypress';
 import PlatformFlag from '../PlatformFlag';
+import ExternalImage from '../ExternalImage/Externalimage';
+import FeatureFlagProvider from '../../providers/FeatureFlag.provider';
 
 const currentYear = new Date().getFullYear();
 
@@ -29,6 +31,9 @@ const Footer = () => {
       <p>
         @ {currentYear} OpenTelemetry (<a href="https://github.com/open-telemetry/opentelemetry-demo">Source Code</a>)
       </p>
+      <FeatureFlagProvider queryFlagName='allowExternalCall'>
+        <ExternalImage />
+      </FeatureFlagProvider>
       <PlatformFlag />
     </S.Footer>
   );

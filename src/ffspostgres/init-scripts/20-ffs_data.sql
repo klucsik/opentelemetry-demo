@@ -14,4 +14,5 @@ VALUES
     ('adServiceManualGc', 'Triggers a full manual gc in the ad service', 0),
     ('itemListInternal', 'Fail Product Catalog List - Internal server error', 0),
     ('itemNotFound', 'Fail Product Catalog Get - Not Found', 0),
-    ('floodHome', 'Flood Homepage with unreasonable amount of traffic', 0);
+    ('floodHome', 'Flood Homepage with unreasonable amount of traffic', 0),
+    ('allowExternalCall','Loads an external image in the frontend footer',0);
