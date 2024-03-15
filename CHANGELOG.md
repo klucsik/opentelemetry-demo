@@ -39,6 +39,8 @@ the release.
   ([#1449](https://github.com/open-telemetry/opentelemetry-demo/pull/1449))
 * [Frontend-proxy] Add restart policy to compose file
   ([#1448](https://github.com/open-telemetry/opentelemetry-demo/pull/1448))
+* [Imageprovider] Create Nginx service to host images, add instrumentation to it
+  ([#1462](https://github.com/open-telemetry/opentelemetry-demo/pull/1462))
 
 ## 1.8.0
 
