@@ -223,7 +223,7 @@ services:
       "file:./etc/flagd/demo.flagd.json"
     ]
     ports:
-      - 8013
+      - "${FLAGD_PORT}"
     volumes:
       - ./src/flagd:/etc/flagd
     logging:
@@ -290,6 +290,8 @@ services:
       - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
       - WEB_OTEL_SERVICE_NAME=frontend-web
       - OTEL_COLLECTOR_HOST
+      - FLAGD_HOST
+      - FLAGD_PORT
     depends_on:
       adservice:
         condition: service_started
@@ -311,6 +313,8 @@ services:
         condition: service_started
       imageprovider:
         condition: service_started
+      flagd:
+        condition: service_started 
     logging: *logging
 
   # Frontend Proxy (Envoy)
@@ -344,6 +348,8 @@ services:
       - OTEL_COLLECTOR_PORT_HTTP
       - OTEL_RESOURCE_ATTRIBUTES
       - ENVOY_PORT
+      - FLAGD_HOST
+      - FLAGD_PORT
     depends_on:
       frontend:
         condition: service_started
