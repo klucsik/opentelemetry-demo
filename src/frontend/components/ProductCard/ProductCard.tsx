@@ -7,7 +7,7 @@ import ProductPrice from '../ProductPrice';
 import * as S from './ProductCard.styled';
 import { useState, useEffect } from 'react';
 import { RequestInfo } from 'undici-types';
-import { useBooleanFlagValue, OpenFeature} from '@openfeature/react-sdk';
+import { useNumberFlagValue, OpenFeature} from '@openfeature/react-sdk';
 import {FlagdWebProvider} from '@openfeature/flagd-web-provider'
 
 interface IProps {
@@ -57,8 +57,8 @@ const ProductCard = ({
   }
 }: IProps) => {
 
-  const imageSlowLoad = useBooleanFlagValue('imageSlowLoad', false);
-  const headers = {'x-envoy-fault-delay-request': imageSlowLoad ? "5000" : "1",
+  const imageSlowLoad = useNumberFlagValue('imageSlowLoad', 0);
+  const headers = {'x-envoy-fault-delay-request': imageSlowLoad.toString(),
                   'Cache-Control': 'no-cache'}
   
   const [imageSrc, setImageSrc] =useState<string>("");

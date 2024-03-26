@@ -71,13 +71,14 @@
       "defaultVariant": "off"
     },
     "imageSlowLoad": {
-      "description": "slowLoading iamges in the frontend",
+      "description": "slowLoading images in the frontend",
       "state": "ENABLED",
       "variants": {
-        "on": true,
-        "off": false
+        "10sec": 10000,
+        "5sec": 5000,
+        "off": 0
       },
-      "defaultVariant": "on"
+      "defaultVariant": "off"
     }
   }
 }
